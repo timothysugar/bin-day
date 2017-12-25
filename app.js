@@ -2,6 +2,7 @@ const http = require('http');
 const querystring = require('querystring');
 const cheerio = require('cheerio')
 const moment = require('moment')
+const HomeAddressUPRN = '100121109103'
 
 const options = {
     host: 'www.wiltshire.gov.uk',
@@ -15,16 +16,17 @@ const options = {
 
 const parseDates = function (data) {
     const $ = cheerio.load(data);
-    var collection = $('.rc-next-collection .row')
+    var collections = $('.rc-next-collection .row')
         .map(function (i, e) {
-            var dateTime = moment($(e).children().eq(1).text().trim(), 'dddd DD MMMM YYYY').format('LLL')
+            var dateTime = moment($(e).children().eq(1).text().trim(), 'dddd DD MMMM YYYY')
+            dateTime.hours(7)
             return {
-                'collection': $(e).children().eq(0).text().trim(),
+                'service': $(e).children().eq(0).text().trim(),
                 'date': dateTime,
             }
         }).get();
 
-    console.log(collection);
+    return collections
 }
 
 const getDatesHtml = function (res) {
@@ -35,12 +37,25 @@ const getDatesHtml = function (res) {
     });
 
     res.on('end', function () {
-        parseDates(str)
+        var collections = parseDates(str)
+        var upcoming = collections.filter(
+            collection => {
+                var endOfTomorrow = moment().add(1, 'days').endOf('day')
+                return collection.date.isBefore(endOfTomorrow)
+            }
+        );
+        if (upcoming.length > 0) {
+            console.log(`${upcoming.length} upcoming collection(s)`)
+            console.log(upcoming)
+        }
+        else {
+            console.log('no upcoming collections')
+        }
     })
 }
 
 const postData = querystring.stringify({
-    'uprn': '100121109103',
+    'uprn': HomeAddressUPRN,
 });
 
 const req = http.request(options, getDatesHtml);
