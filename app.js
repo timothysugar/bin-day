@@ -1,6 +1,7 @@
 const http = require('http');
 const querystring = require('querystring');
 const cheerio = require('cheerio')
+const moment = require('moment')
 
 const options = {
     host: 'www.wiltshire.gov.uk',
@@ -14,7 +15,15 @@ const options = {
 
 const parseDates = function (data) {
     const $ = cheerio.load(data);
-    var collection = $('.rc-next-collection .row').text();
+    var collection = $('.rc-next-collection .row')
+        .map(function (i, e) {
+            var dateTime = moment($(e).children().eq(1).text().trim(), 'dddd DD MMMM YYYY').format('LLL')
+            return {
+                'collection': $(e).children().eq(0).text().trim(),
+                'date': dateTime,
+            }
+        }).get();
+
     console.log(collection);
 }
 
