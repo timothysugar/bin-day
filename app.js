@@ -1,20 +1,12 @@
 const http = require('http');
+const https = require('https');
 const querystring = require('querystring');
 const cheerio = require('cheerio')
 const moment = require('moment')
 const HomeAddressUPRN = '100121109103'
+const IFTTTKey = ''
 
-const options = {
-    host: 'www.wiltshire.gov.uk',
-    path: '/rubbish-collection/address-area',
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        'X-Requested-With': 'XMLHttpRequest',
-    },
-}
-
-const parseDates = function (data) {
+const parseCollections = function (data) {
     const $ = cheerio.load(data);
     var collections = $('.rc-next-collection .row')
         .map(function (i, e) {
@@ -29,7 +21,7 @@ const parseDates = function (data) {
     return collections
 }
 
-const getDatesHtml = function (res) {
+const getCollectionsHtml = function (res) {
     var str = '';
     res.setEncoding('utf8');
     res.on('data', function (chunk) {
@@ -37,14 +29,33 @@ const getDatesHtml = function (res) {
     });
 
     res.on('end', function () {
-        var collections = parseDates(str)
+        var collections = parseCollections(str)
         var upcoming = collections.filter(
             collection => {
                 var endOfTomorrow = moment().add(1, 'days').endOf('day')
                 return collection.date.isBefore(endOfTomorrow)
             }
         );
+
         if (upcoming.length > 0) {
+            let entry = {
+                value1: `${upcoming[0].service + upcoming[0].date.format('ddd')}`,
+            };
+            let postData = JSON.stringify(entry);
+
+            var req = https.request({
+                host: 'maker.ifttt.com',
+                path: `/trigger/upcoming_bin_collection/with/key/${IFTTTKey}`,
+                port: 443,
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Content-Length': postData.length
+                }
+            })
+            req.write(postData)
+            req.end()
+
             console.log(`${upcoming.length} upcoming collection(s)`)
             console.log(upcoming)
         }
@@ -54,10 +65,20 @@ const getDatesHtml = function (res) {
     })
 }
 
+const options = {
+    host: 'www.wiltshire.gov.uk',
+    path: '/rubbish-collection/address-area',
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'X-Requested-With': 'XMLHttpRequest',
+    },
+}
+
 const postData = querystring.stringify({
     'uprn': HomeAddressUPRN,
 });
 
-const req = http.request(options, getDatesHtml);
+const req = http.request(options, getCollectionsHtml);
 req.write(postData);
 req.end();
