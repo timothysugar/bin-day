@@ -79,7 +79,7 @@ const postData = querystring.stringify({
     'uprn': HomeAddressUPRN,
 });
 
-module.exports. query = function () {
+module.exports.query = function () {
     const req = http.request(options, getCollectionsHtml);
     req.write(postData);
     req.end();
