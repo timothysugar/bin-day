@@ -1,4 +1,5 @@
 const Collections = require('./collections.js');
+const Notifier = require('./notifier.js');
 
 /**
  * HTTP Cloud Function.
@@ -7,6 +8,6 @@ const Collections = require('./collections.js');
  * @param {Object} res Cloud Function response context.
  */
 exports.binsHTTP = function binsHTTP(req, res) {
-    Collections.query();
+    Collections.query(Notifier.notifyUpcoming);
     res.status(200).send("Collections queried.")
   };
