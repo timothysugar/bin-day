@@ -1,0 +1,16 @@
+service: bins
+provider:
+  name: aws
+  runtime: nodejs6.10
+  stage: dev
+  region: eu-west-2
+functions:
+  query-and-notify:
+    handler: main.handler
+    environment:
+      ADDRESSUPRN: ${env:ADDRESSUPRN}
+      IFTTTKEY: ${env:IFTTTKEY}
+    events:
+      - http:
+          path: bins
+          method: get
