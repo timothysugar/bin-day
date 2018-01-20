@@ -1,8 +1,9 @@
-service: new-service
+service: bins
 provider:
   name: aws
   runtime: nodejs6.10
   stage: dev
+  region: eu-west-2
 functions:
   bins:
-    handler: handler.handler
+    handler: main.handler
