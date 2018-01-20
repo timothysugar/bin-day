@@ -1,17 +1,13 @@
 language: node_js
 node_js:
-  - "node"
-
-install:
-   - npm install
-
-deploy:
-  provider: lambda
-  function_name: "bin-day"
-  region: "eu-west-2"
-  role: "arn:aws:iam::726980345866:role/service-role/lambda-tester"
-  runtime: "nodejs6.10"
-  handler_name: "handler"
-  access_key_id: "AKIAIZZNXVPXG7HBYPNA"
-  secret_access_key:
-    secure: BPzwlme8XtdLYP2EdPffYuicT0C4vmemNaQFwqimtGtTaItTVW+zar+BEBuu3b3TF7+jI3ldtPJTwAXoac8falI3NdbGYB5pr2Wi0xzE3H+YhZPtQDWKIJCwjqTGUcU1OsYpICkAS/Kb3x9VpDWgWjRil3yRGJXWB3/JUAhoYWDTjLynAiN79JHc51KuRJvxB02ojzg5QpVBaT4B+ZnTXaOtWSzje2a1skdpLxg9UU2y+TYOhnGBpogouuClPXE+UDyeEYdCGOWKddI26qiCdywiPXXh5vxX17O1uhsl/ov+jh2Uk52cj/cxZsiFDjOcBhMIzJxBCmgjrgQDwGM4V/4WyIQV6zv5XmRCIXWgqGeDXCCIe9c85khkVrq+Kt0RQyilIl5ehz2Bk30+AbHFd+l7qeT3agXAvsp9a4kl3cacZESwMpR1GMeJaLnWAhPSLfbvOjrVA8lUJ6wLrdXiYJFsEVBWgQlpwktJp2HcRP2xHYq7g66WxHM90Ufj0hU53G1I3jsgI2k/WRUNCnQqZV0WuaCvKc349BBqsDKWMcbkhOkWBhkfssa2iJlaKiAzktiQ46DKvFTP/jY9wGqZlnZTLKtvBV487lwOhXY4jS6u0HCEuBbvmRIS6l5D52KABmj5gwAnd7GckoUjUpNtvlPPqRJqdR3U9+D22rgGflM=
+- node
+env:
+  global:
+  - AWS_ACCESS_KEY_ID=AKIAII3DW4OTGOFVOKBQ
+  - secure: q+Ppx5GPzE9Oftz7+7FVEQmlxVJLJn7afMa36XD4mJgOHSpWCwrMHjgOPw9bWjoX2/+os9mnT254ZpzmjPwMOFh49cmv1j1W/h/7e7on8y99Yq6f9kMWkeE59iYNkc3vTD6YSjy60pCjOV3omkM3AT9SBFKOxL29VTmfMnAdi9MEBgWIlbohHvbvq+GidFbKyZOYHzmBHnNOhZDY3ZcEITqXlmIt6Zp5j5LYQT0DlK5oRcfHlQEwMJLzARMv1Wyx+wP+VpttB8lQYnQmE4Yxa6J5iXmCKWlWTTR/stYDczu0ImSacZ3QWu9zoJ1d/CSVgj6nbJ3PKbA3/D6kgEBALyj//KdjqafCendD8tcTOpHQUROSt+3UWcKeHSJoDupn+23SiA+GWgYg0DRbzr0ZFGNPDSjTyEmkLRsapaipSo2mygSc1F55UIJDl7SyTe7mpdCPUH5Uwbhn7jB+vqzh0F+ybmY6KzqU0gIt5IixNsdMuRurcMWVQmrR9FFfsFHH1xWyDkOjYyY+OAB12Cnrz8+GRSl+jUOrjqbMOn2QXb+YT1dy7onSSMt7kSS8ZMBaM2ul47LEoRmm4uclTOw5+x1Yh/c/hioermaPD6hiEOPdpRe9MrwhSK1Mjt82ZLieLPufrKwU4kMAhyaUk7B1ubCqwLGDlZfO4WaL2xVu4Is=
+cache:
+  directories:
+  - node_modules
+script:
+- npm install -g serverless
+- sls deploy

@@ -1,0 +1,9 @@
+service: new-service
+provider:
+  name: aws
+  runtime: nodejs6.10
+  stage: dev
+  profile: serverless
+functions:
+  bins:
+    handler: handler.handler

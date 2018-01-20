@@ -1,2 +1,7 @@
-secrets.txt
 node_modules
+
+#Serverless Framework
+admin.env
+.env
+_meta
+.serverless
