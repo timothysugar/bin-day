@@ -9,6 +9,7 @@ functions:
     handler: main.handler
     environment:
       ADDRESSUPRN: ${env:ADDRESSUPRN}
+      IFTTTKEY: ${env:IFTTTKEY}
     events:
       - http:
           path: bins

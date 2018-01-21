@@ -1,5 +1,5 @@
 const https = require('https');
-const IFTTTKey = ''
+const IFTTTKey = process.env.IFTTTKey
 
 module.exports.notifyUpcoming = function (err, upcoming) {
     if (upcoming.length > 0) {
