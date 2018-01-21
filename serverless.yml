@@ -5,5 +5,9 @@ provider:
   stage: dev
   region: eu-west-2
 functions:
-  bins:
+  query-and-notify:
     handler: main.handler
+    events:
+      - http:
+          path: bins
+          method: get
