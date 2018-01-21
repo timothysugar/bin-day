@@ -2,7 +2,7 @@ const http = require('http');
 const querystring = require('querystring');
 const cheerio = require('cheerio')
 const moment = require('moment')
-const HomeAddressUPRN = ''
+const AddressUPRN = process.env.ADDRESSUPRN
 
 const parseCollections = function (html) {
     const $ = cheerio.load(html);
@@ -62,7 +62,7 @@ const options = {
 }
 
 const postData = querystring.stringify({
-    'uprn': HomeAddressUPRN,
+    'uprn': AddressUPRN,
 });
 
 module.exports.query = function(callback) {

@@ -7,6 +7,8 @@ provider:
 functions:
   query-and-notify:
     handler: main.handler
+    environment:
+      ADDRESSUPRN: ${env:ADDRESSUPRN}
     events:
       - http:
           path: bins
