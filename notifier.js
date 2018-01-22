@@ -8,6 +8,8 @@ module.exports.notifyUpcoming = function (err, upcoming) {
         };
         let postData = JSON.stringify(entry);
 
+        console.log(`calling IFTTT with key ${IFTTTKEY}`)
+        
         var req = https.request({
             host: 'maker.ifttt.com',
             path: `/trigger/upcoming_bin_collection/with/key/${IFTTTKey}`,
