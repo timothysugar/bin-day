@@ -1,5 +1,5 @@
 const https = require('https');
-const IFTTTKey = process.env.IFTTTKey
+const IFTTTKey = process.env.IFTTTKEY
 
 module.exports.notifyUpcoming = function (err, upcoming) {
     if (upcoming.length > 0) {
@@ -8,8 +8,6 @@ module.exports.notifyUpcoming = function (err, upcoming) {
         };
         let postData = JSON.stringify(entry);
 
-        console.log(`calling IFTTT with key ${IFTTTKEY}`)
-        
         var req = https.request({
             host: 'maker.ifttt.com',
             path: `/trigger/upcoming_bin_collection/with/key/${IFTTTKey}`,
