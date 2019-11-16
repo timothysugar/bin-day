@@ -2,69 +2,75 @@ const http = require('http');
 const querystring = require('querystring');
 const cheerio = require('cheerio')
 const moment = require('moment')
-const AddressUPRN = process.env.ADDRESSUPRN
 
-const parseCollections = function (html) {
-    const $ = cheerio.load(html);
-    var collections = $('.rc-next-collection .row')
-        .map(function (i, e) {
-            var dateTime = moment($(e).children().eq(1).text().trim(), 'dddd DD MMMM YYYY')
-            dateTime.hours(7)
-            return {
-                'service': $(e).children().eq(0).text().trim(),
-                'date': dateTime,
-            }
-        }).get();
+const getCollections = function (UPRN, cb) {
 
-    return collections
-}
+    const options = {
+        host: 'www.wiltshire.gov.uk',
+        path: '/rubbish-collection/address-area',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+    }
 
-const getCollections = function (callback) {
+    const postData = querystring.stringify({
+        'uprn': UPRN,
+    });
     const req = http.request(options, function (res) {
-        var str = '';
+        let str = '';
         res.setEncoding('utf8');
         res.on('data', function (chunk) {
             str += chunk;
         });
 
         res.on('end', function () {
-            var collections = parseCollections(str)
-            var upcoming = collections.filter(
-                collection => {
-                    var endOfTomorrow = moment().add(1, 'days').endOf('day')
-                    return collection.date.isBefore(endOfTomorrow)
-                }
-            );
-
-            if (upcoming.length > 0) {
-                console.log(`${upcoming.length} upcoming collection(s)`)
-                console.log(upcoming)
-            }
-            else {
-                console.log('no upcoming collections')
-            }
-
-            callback(null, upcoming)
+            cb(null, str)
         })
     });
     req.write(postData);
     req.end();
 }
 
-const options = {
-    host: 'www.wiltshire.gov.uk',
-    path: '/rubbish-collection/address-area',
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        'X-Requested-With': 'XMLHttpRequest',
-    },
+const parseCollections = function (html) {
+    const $ = cheerio.load(html);
+    const collections = $('.rc-next-collection .row')
+        .map(function (i, e) {
+            const dateTime = moment($(e).children().eq(1).text().trim(), 'dddd DD MMMM YYYY')
+            return {
+                'service': $(e).children().eq(0).text().trim(),
+                'date': dateTime,
+            }
+        }).get();
+
+    console.log(JSON.stringify({collections}))
+    return collections
 }
 
-const postData = querystring.stringify({
-    'uprn': AddressUPRN,
-});
+const startOfTomorrow = moment().add(1, 'days').startOf('day')
+const endOfTomorrow = moment().add(1, 'days').endOf('day')
+const filterUpcoming = function (collections, from = startOfTomorrow, to = endOfTomorrow) {
+    const upcoming = collections.filter(
+        collection => {
+            return collection.date.isBetween(from, to)
+        }
+    );
+    console.log(JSON.stringify({upcoming}))
 
-module.exports.query = function(callback) {
-    getCollections(callback);;
+    return upcoming
+}
+
+const getUpcoming = function (UPRN, cb) {
+    getCollections(UPRN, (err, html) => {
+        const collections = parseCollections(html)
+        cb(null, filterUpcoming(collections))
+    })
+}
+
+
+module.exports = {
+    query: getUpcoming,
+    getCollections,
+    filterUpcoming,
 }

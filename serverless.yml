@@ -1,7 +1,9 @@
+org: timothysugar
+app: bin-day
 service: bins
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs12.x
   memorySize: 128
   stage: dev
   region: eu-west-2
