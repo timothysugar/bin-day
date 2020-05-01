@@ -48,12 +48,12 @@ const parseCollections = function (html) {
     return collections
 }
 
-const startOfTomorrow = moment().add(1, 'days').startOf('day')
-const endOfTomorrow = moment().add(1, 'days').endOf('day')
+const startOfTomorrow = moment().utc().add(1, 'days').startOf('day')
+const endOfTomorrow = moment().utc().add(1, 'days').endOf('day')
 const filterUpcoming = function (collections, from = startOfTomorrow, to = endOfTomorrow) {
     const upcoming = collections.filter(
         collection => {
-            return collection.date.isBetween(from, to)
+            return collection.date.isSame(from) || collection.date.isBetween(from, to)
         }
     );
     console.log(JSON.stringify({upcoming}))

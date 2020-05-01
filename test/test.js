@@ -27,11 +27,33 @@ describe('Get collections', function () {
 
 describe('Filtering tomorrows collections', function () {
   it('should return an event occuring midday tomorrow', function () {
-    middayTomorrow = moment().add(1, 'day').hour(12)
+    middayTomorrow = moment().utc()
+      .add(1, 'day')
+      .hour(12)
+      .minute(0)
+      .second(0)
+      .milliseconds(0)
     const collections = [
       {
         service: "any-service",
         date: middayTomorrow,
+      }
+    ]
+
+    assert.equal(Collections.filterUpcoming(collections).length, 1)
+  })
+
+  it('should return an event occuring at midnight', function () {
+    midnight = moment().utc()
+      .add(1, 'day')
+      .hour(0)
+      .minute(0)
+      .second(0)
+      .milliseconds(0)
+    const collections = [
+      {
+        service: "any-service",
+        date: midnight,
       }
     ]
 
