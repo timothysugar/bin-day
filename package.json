@@ -10,7 +10,8 @@
     "querystring": "^0.2.0"
   },
   "devDependencies": {
-    "mocha": "^6.2.3"
+    "mocha": "^6.2.3",
+    "standard": "^14.3.3"
   },
   "scripts": {
     "test": "npx mocha"
@@ -24,5 +25,8 @@
   "bugs": {
     "url": "https://github.com/timothysugar/bin-day/issues"
   },
-  "homepage": "https://github.com/timothysugar/bin-day#readme"
+  "homepage": "https://github.com/timothysugar/bin-day#readme",
+  "standard": {
+    "globals": [ "describe", "it" ]
+  }
 }
