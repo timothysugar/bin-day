@@ -4,9 +4,8 @@ const cheerio = require('cheerio')
 const moment = require('moment')
 
 const getCollections = function (UPRN, cb) {
-
     const options = {
-        host: 'www.wiltshire.gov.uk',
+        host: 'wiltshire.gov.uk',
         path: '/rubbish-collection/address-area',
         method: 'POST',
         headers: {
@@ -19,14 +18,14 @@ const getCollections = function (UPRN, cb) {
         'uprn': UPRN,
     });
     const req = http.request(options, function (res) {
-        let str = '';
+        let rawData = '';
         res.setEncoding('utf8');
         res.on('data', function (chunk) {
-            str += chunk;
+            rawData += chunk;
         });
 
         res.on('end', function () {
-            cb(null, str)
+            return cb(null, rawData)
         })
     });
     req.write(postData);
@@ -36,8 +35,8 @@ const getCollections = function (UPRN, cb) {
 const parseCollections = function (html) {
     const $ = cheerio.load(html);
     const collections = $('.rc-next-collection .row')
-        .map(function (i, e) {
-            const dateTime = moment($(e).children().eq(1).text().trim(), 'dddd DD MMMM YYYY')
+        .map(function (_, e) {
+            const dateTime = moment.utc($(e).children().eq(1).text().trim(), 'dddd DD MMMM YYYY')
             return {
                 'service': $(e).children().eq(0).text().trim(),
                 'date': dateTime,
@@ -48,29 +47,34 @@ const parseCollections = function (html) {
     return collections
 }
 
+const filterTomorrow = function (collections) {
 const startOfTomorrow = moment().utc().add(1, 'days').startOf('day')
 const endOfTomorrow = moment().utc().add(1, 'days').endOf('day')
-const filterUpcoming = function (collections, from = startOfTomorrow, to = endOfTomorrow) {
     const upcoming = collections.filter(
         collection => {
-            return collection.date.isSame(from) || collection.date.isBetween(from, to)
+            return collection.date.isSame(startOfTomorrow) ||
+                collection.date.isBetween(startOfTomorrow, endOfTomorrow)
         }
     );
-    console.log(JSON.stringify({upcoming}))
+    console.log(`collections tomorrow ${JSON.stringify(upcoming)}`)
 
     return upcoming
 }
 
-const getUpcoming = function (UPRN, cb) {
+const getTomorrow = function (UPRN, cb) {
     getCollections(UPRN, (err, html) => {
+        if (err) {
+            console.log('unable to get collections')
+            return cb(err)
+        }
         const collections = parseCollections(html)
-        cb(null, filterUpcoming(collections))
+        cb(null, filterTomorrow(collections))
     })
 }
 
 
 module.exports = {
-    query: getUpcoming,
     getCollections,
-    filterUpcoming,
+    getTomorrow,
+    filterTomorrow,
 }

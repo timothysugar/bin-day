@@ -5,7 +5,7 @@ const Notifications = require('../notifier')
 describe('Send notification', function () {
   it('should not return an error', function () {
     const upcoming = [{"service":"any-service","date": moment()}]
-    Notifications.notifyUpcoming(null, upcoming, (err) => {
+    Notifications.notifyUpcoming(upcoming, (err) => {
       assert(err == null)
     })
   })

@@ -4,10 +4,8 @@ const moment = require('moment')
 const validUPRN = 100121074244
 
 describe('Query collections', function () {
-  it('should not return an error', function () {
-    Collections.query(validUPRN, (err) => {
-      assert(err == null)
-    });
+  it('should not return an error', function (done) {
+    Collections.getTomorrow(validUPRN, done)
   });
 });
 
@@ -27,7 +25,7 @@ describe('Get collections', function () {
 
 describe('Filtering tomorrows collections', function () {
   it('should return an event occuring midday tomorrow', function () {
-    middayTomorrow = moment().utc()
+    middayTomorrow = moment()
       .add(1, 'day')
       .hour(12)
       .minute(0)
@@ -40,7 +38,7 @@ describe('Filtering tomorrows collections', function () {
       }
     ]
 
-    assert.equal(Collections.filterUpcoming(collections).length, 1)
+    assert.equal(Collections.filterTomorrow(collections).length, 1)
   })
 
   it('should return an event occuring at midnight', function () {
@@ -57,6 +55,6 @@ describe('Filtering tomorrows collections', function () {
       }
     ]
 
-    assert.equal(Collections.filterUpcoming(collections).length, 1)
+    assert.equal(Collections.filterTomorrow(collections).length, 1)
   })
 })
